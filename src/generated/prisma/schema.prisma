@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  clerkId        String          @unique
+  name           String?
+  createdAt      DateTime        @default(now())
+  messages       Message[]
+  projects       Project[]
+  projectMembers ProjectMember[]
+  stones         Stone[]
+  activities     Activity[]
+}
+
+model Project {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String?
+  ownerId     String
+  createdAt   DateTime        @default(now())
+  owner       User            @relation(fields: [ownerId], references: [clerkId])
+  members     ProjectMember[]
+  stones      Stone[]
+  activities  Activity[]
+}
+
+model ProjectMember {
+  id          Int      @id @default(autoincrement())
+  projectId   Int
+  userClerkId String
+  role        Role     @default(CONTRIBUTOR)
+  joinedAt    DateTime @default(now())
+  project     Project  @relation(fields: [projectId], references: [id])
+  user        User     @relation(fields: [userClerkId], references: [clerkId])
+
+  @@unique([projectId, userClerkId])
+}
+
+model Stone {
+  id         Int         @id @default(autoincrement())
+  title      String
+  detail     String?
+  status     StoneStatus @default(TO_DO)
+  projectId  Int
+  assigneeId String?
+  createdAt  DateTime    @default(now())
+  messages   Message[]
+  assignee   User?       @relation(fields: [assigneeId], references: [clerkId])
+  project    Project     @relation(fields: [projectId], references: [id])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  senderId  String
+  stoneId   Int
+  createdAt DateTime @default(now())
+  sender    User     @relation(fields: [senderId], references: [clerkId])
+  stone     Stone    @relation(fields: [stoneId], references: [id])
+}
+
+model Activity {
+  id          Int          @id @default(autoincrement())
+  type        ActivityType
+  description String
+  userClerkId String
+  projectId   Int
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [userClerkId], references: [clerkId])
+  project     Project      @relation(fields: [projectId], references: [id])
+}
+
+enum Role {
+  OWNER
+  CONTRIBUTOR
+}
+
+enum StoneStatus {
+  TO_DO
+  IN_PROGRESS
+  DONE
+}
+
+enum ActivityType {
+  STONE_COMPLETED
+  COMMENT_ADDED
+  STONE_ASSIGNED
+  MEMBER_ADDED
+}
