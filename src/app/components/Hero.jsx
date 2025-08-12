@@ -19,11 +19,11 @@ export default function Hero() {
   const router = useRouter();
 
   const handleStart = () => {
-    router.push('/onboarding');
+    router.push('/sign-in');
   };
 
   const handleBrowse = () => {
-    router.push('/onboarding');
+    router.push('/sign-in');
   };
 
   const containerVariants = {

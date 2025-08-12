@@ -74,11 +74,11 @@ export default function Navbar() {
   };
 
   const handleJoin = () => {
-    router.push('/onboarding');
+    router.push('/sign-in');
   };
 
   const handleStartNow = () => {
-    router.push('/onboarding');
+    router.push('/sign-in');
   };
 
   return (
