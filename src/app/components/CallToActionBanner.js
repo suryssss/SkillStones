@@ -45,7 +45,7 @@ export default function CallToActionBanner() {
           Start collaborating with your team and make real progress today.
         </motion.p>
         <motion.a
-          href="/onboarding"
+          href="/sign-in"
           className="px-12 py-5 bg-white text-teal-900 font-bold rounded-2xl text-2xl shadow-xl hover:bg-teal-50 hover:scale-105 transition-all duration-300 ease-in-out"
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.97 }}

@@ -17,7 +17,7 @@ export default function Dashboard() {
       } else if (role === USER_ROLES.CONTRIBUTOR && !window.location.pathname.startsWith('/dashboard/contributor')) {
         router.replace('/dashboard/contributor');
       } else if (!role) {
-        router.replace('/onboarding');
+        router.replace('/role-selection');
       }
       
     }

@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 // Define public routes
 const publicRoutes = [
   "/",
-  "/login(.*)",
-  "/signup(.*)",
-  "/onboarding",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/select-role",
   "/api/test-db",
   "/api/auth/check"
 ];
@@ -58,23 +58,33 @@ export default clerkMiddleware({
     });
 
     if (!auth.userId && !isPublicRoute) {
-      console.log('Redirecting unauthenticated user to onboarding');
-      return NextResponse.redirect(new URL("/onboarding", req.url));
+      return NextResponse.redirect(new URL("/sign-in", req.url));
     }
 
-    if (auth.userId && !userRole && !path.startsWith("/onboarding")) {
-      return NextResponse.redirect(new URL("/onboarding", req.url));
+    if (auth.userId && !userRole && !path.startsWith("/select-role")) {
+      return NextResponse.redirect(new URL("/select-role", req.url));
     }
 
+    // Prevent logged-in users from visiting auth pages or select-role when already has role
     if (
       auth.userId &&
       userRole &&
-      (path === "/login" || path === "/signup" || path === "/onboarding")
+      (path === "/sign-in" || path === "/sign-up" || path === "/select-role")
     ) {
       const dashboardUrl =
         userRole === "owner" ? "/dashboard/owner" : "/dashboard/contributor";
       if (!path.startsWith(dashboardUrl)) {
         return NextResponse.redirect(new URL(dashboardUrl, req.url));
+      }
+    }
+
+    // Guard dashboard URLs by role
+    if (auth.userId && userRole) {
+      if (path.startsWith("/dashboard/owner") && userRole !== "owner") {
+        return NextResponse.redirect(new URL("/dashboard/contributor", req.url));
+      }
+      if (path.startsWith("/dashboard/contributor") && userRole !== "contributor") {
+        return NextResponse.redirect(new URL("/dashboard/owner", req.url));
       }
     }
 
